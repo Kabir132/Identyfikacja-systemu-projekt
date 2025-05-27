@@ -58,6 +58,11 @@ Główne założenia projektowe:
 
 Identyfikacja systemów stanowi kluczowy element w inżynierii sterowania, pozwalający na matematyczny opis zachowania systemu na podstawie danych pomiarowych. Pozwala to na projektowanie układów sterowania oraz przeprowadzanie symulacji bez konieczności opierania się wyłącznie na modelu fizycznym obiektu.
 
+**Odniesienia do materiałów kursu:**
+
+- Podstawy analizy sygnałów i ich właściwości omówione są w **IdScw1.pdf** (sekcja: "Podstawowa analiza sygnałów")
+- Metody pozyskiwania wiedzy wstępnej o systemie opisane w **IdScw2.pdf** (sekcja: "Pozyskiwanie wiedzy wstępnej o systemie")
+
 ## 2. Opis obiektu
 
 Badanym obiektem jest laboratoryjny model silnika parowego, który charakteryzuje się następującymi parametrami:
@@ -130,7 +135,7 @@ W ramach przygotowania danych wykonano następujące czynności:
 
 Poniżej przedstawiono wykresy przebiegu czasowego sygnałów wejściowych i wyjściowego:
 
-![Rys. 1: Dane pomiarowe](dane_pomiarowe.png)
+![Rys. 1: Dane pomiarowe](./dane_pomiarowe-eps-converted-to.pdf)
 
 _Rys. 1 Przebiegi czasowe sygnałów: u1 (ciśnienie pary), u2 (napięcie magnetyzacji) oraz y (napięcie w generatorze)_
 
@@ -140,9 +145,19 @@ Analiza wizualna danych pozwala na wstępną ocenę charakteru dynamiki systemu 
 - Wyjście systemu (y) wykazuje dynamiczną odpowiedź na zmiany sygnałów wejściowych.
 - Widoczne są opóźnienia między zmianami wejść a odpowiedzią wyjścia, co wskazuje na obecność opóźnień transportowych w systemie.
 
+**Materiały źródłowe:**
+
+- Teoria analizy sygnałów w dziedzinie czasu: **IdScw1.pdf** (równanie 1: definicja procesu stochastycznego)
+- Metody nieparametryczne analizy odpowiedzi czasowych: **IdScw2.pdf** (sekcja 1: "Identyfikacja poprzez analizę odpowiedzi czasowych")
+
 ## 4. Struktura modelu ARX
 
 Do identyfikacji systemu wybrano model ARX (AutoRegressive with eXogenous inputs) o następującej strukturze:
+
+**Podstawy teoretyczne:**
+
+- Modele parametryczne typu ARX opisane w **IdScw3.pdf** (sekcja: "Wsadowa parametryczna identyfikacja systemów")
+- Struktury regresyjne systemów dynamicznych w **IdScw4.pdf** (równanie 1: postać regresyjna)
 
 ### 4.1 Równanie modelu
 
@@ -411,6 +426,11 @@ Wybór struktury ARX(2,[2,2],[1,1]) dla silnika parowego jest **kompromisem** mi
 ### 5.1 Sformułowanie problemu
 
 Metoda najmniejszych kwadratów pozwala na znalezienie parametrów modelu poprzez minimalizację sumy kwadratów błędów między wyjściem modelu a rzeczywistymi pomiarami.
+
+**Podstawy teoretyczne metody LS:**
+
+- Metoda najmniejszych kwadratów (LS) szczegółowo opisana w **IdScw3.pdf** (sekcja 1: "Identyfikacja systemu statycznego metodą LS", równanie 1)
+- Wsadowa parametryczna identyfikacja systemów w **IdScw3.pdf** (wprowadzenie do ćwiczenia C3)
 
 Problem można sprowadzić do postaci macierzowej:
 
@@ -806,6 +826,110 @@ Możliwe ulepszenia procedury identyfikacji obejmują:
 4. **Walidacja krzyżowa** - podział danych na zbiór uczący i testowy w celu lepszej oceny zdolności generalizacyjnych modelu.
 
 ## 9. Literatura
+
+### 9.1 Mapa referencji do materiałów kursu
+
+Poniżej przedstawiono szczegółowe mapowanie tematów omówionych w sprawozdaniu do odpowiednich materiałów dydaktycznych kursu:
+
+#### **IdScw1.pdf - "Podstawowa analiza sygnałów"**
+
+**Główne tematy:**
+
+- Analiza sygnałów deterministycznych i losowych w dziedzinie czasu i częstotliwości
+- Definicja procesów stochastycznych czasu dyskretnego
+- Analiza korelacyjna i widmowa jako metody nieparametryczne
+
+**Kluczowe równania i pojęcia:**
+
+- **Równanie (1)**: Definicja procesu stochastycznego `{X(n)}n∈N={X(0),X(1),X(2),...}`
+- Próbkowanie sygnałów: `x(nTp)` gdzie `Tp` to okres próbkowania
+- Sekwencje skończone: `{x(n)}N−1 n=0`
+
+**Zastosowanie w sprawozdaniu:**
+
+- Sekcja 1: Podstawy analizy sygnałów w identyfikacji systemów
+- Sekcja 3.2: Wizualizacja danych pomiarowych w dziedzinie czasu
+
+#### **IdScw2.pdf - "Pozyskiwanie wiedzy wstępnej o systemie"**
+
+**Główne tematy:**
+
+- Deterministyczne i nieparametryczne metody identyfikacji
+- Analiza odpowiedzi czasowych (odpowiedź skokowa, impulsowa)
+- Charakterystyki Bodego
+- Ocena rzędu i charakteru dynamiki systemu
+
+**Kluczowe pojęcia:**
+
+- **Sekcja 1**: "Identyfikacja poprzez analizę odpowiedzi czasowych"
+- Sekwencje próbek odpowiedzi: `{h(nTp)}N−1 n=0`
+- Transmitancja operatorowa `G(s)`
+- Aproksymacja dynamiki systemów wysokiego rzędu
+
+**Zastosowanie w sprawozdaniu:**
+
+- Sekcja 3.2: Analiza wizualna danych pomiarowych
+- Wstępna ocena charakteru dynamiki silnika parowego
+
+#### **IdScw3.pdf - "Wsadowa parametryczna identyfikacja systemów"**
+
+**Główne tematy:**
+
+- Metoda najmniejszych kwadratów (LS)
+- Metoda zmiennych instrumentalnych (IV)
+- Modele typu GREY-BOX
+- Identyfikacja systemów statycznych i dynamicznych
+
+**Kluczowe równania:**
+
+- **Równanie (1)**: Model systemu statycznego `y=fo(u,po) +v`
+- Wektor parametrów: `po= [p1o p2o ... pdpo]T`
+- Kryterium najmniejszych kwadratów
+- Struktura modeli parametrycznych
+
+**Zastosowanie w sprawozdaniu:**
+
+- Sekcja 4: Struktura modelu ARX
+- Sekcja 5: Identyfikacja parametrów metodą najmniejszych kwadratów
+- Podstawy teoretyczne metody LS
+
+#### **IdScw4.pdf - "Rekursywna parametryczna identyfikacja systemów"**
+
+**Główne tematy:**
+
+- Rekursywne wersje metod LS i IV (RLS, RIV)
+- Algorytmy w czasie rzeczywistym
+- Sterowanie adaptacyjne
+- Diagnostyka uszkodzeń
+
+**Kluczowe równania:**
+
+- **Równanie (1)**: Postać regresyjna `y(n) =Go(q−1,po)u(n) +v*(n)⇒y(n) =φT(n)po+v(n)`
+- Systemy dynamiczne czasu dyskretnego
+- Iteracyjne algorytmy estymacji
+
+**Zastosowanie w sprawozdaniu:**
+
+- Sekcja 4.1: Równanie modelu ARX w postaci regresyjnej
+- Sekcja 5: Sformułowanie macierzowe problemu identyfikacji
+- Koncepcja wektora regresorów `φ(n)`
+
+#### **Szczegółowa mapa tematów:**
+
+| **Temat w sprawozdaniu**          | **Plik PDF**           | **Lokalizacja**        | **Opis**                               |
+| --------------------------------- | ---------------------- | ---------------------- | -------------------------------------- |
+| Definicja procesu stochastycznego | IdScw1.pdf             | Równanie (1)           | Podstawy matematyczne analizy sygnałów |
+| Analiza odpowiedzi czasowych      | IdScw2.pdf             | Sekcja 1               | Metody deterministyczne identyfikacji  |
+| Analiza korelacyjna               | IdScw1.pdf, IdScw2.pdf | Całość                 | Nieparametryczne metody identyfikacji  |
+| Metoda najmniejszych kwadratów    | IdScw3.pdf             | Sekcja 1, równanie (1) | Podstawy teoretyczne LS                |
+| Model parametryczny               | IdScw3.pdf             | Wprowadzenie           | Struktury GREY-BOX                     |
+| Postać regresyjna                 | IdScw4.pdf             | Równanie (1)           | Matematyczne sformułowanie modelu ARX  |
+| Wsadowa identyfikacja             | IdScw3.pdf             | Tytuł ćwiczenia        | Wykorzystanie całego wsadu danych      |
+| Systemy MISO                      | IdScw3.pdf, IdScw4.pdf | Przykłady              | Systemy wielowejściowe                 |
+| Stabilność systemów               | IdScw2.pdf             | Charakterystyki        | Ocena właściwości dynamicznych         |
+| Transmitancje operatorowe         | IdScw2.pdf             | Sekcja 1               | Opis dynamiki w dziedzinie s           |
+
+### 9.2 Bibliografia
 
 1. Söderström T., Stoica P.: _System Identification_. Prentice Hall, 1989.
 2. Ljung L.: _System Identification: Theory for the User_. Prentice Hall, 1999.
