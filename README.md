@@ -4,6 +4,47 @@
 **Data:** 27.05.2025  
 **Temat:** Identyfikacja parametryczna modelu silnika parowego metodą najmniejszych kwadratów
 
+## Spis Treści
+
+1. [Wstęp i cel ćwiczenia](#1-wstęp-i-cel-ćwiczenia)
+2. [Opis obiektu](#2-opis-obiektu)
+   - 2.1 [Zasada działania silnika parowego](#21-zasada-działania-silnika-parowego)
+3. [Przygotowanie danych pomiarowych](#3-przygotowanie-danych-pomiarowych)
+   - 3.1 [Preprocessing danych](#31-preprocessing-danych)
+   - 3.2 [Wizualizacja danych pomiarowych](#32-wizualizacja-danych-pomiarowych)
+4. [Struktura modelu ARX](#4-struktura-modelu-arx)
+   - 4.1 [Równanie modelu](#41-równanie-modelu)
+   - 4.2 [Interpretacja parametrów modelu ARX](#42-interpretacja-parametrów-modelu-arx)
+   - 4.3 [Parametry struktury](#43-parametry-struktury)
+   - 4.4 [Szczegółowe objaśnienie notacji ARX(2,[2,2],[1,1])](#44-szczegółowe-objaśnienie-notacji-arx222111)
+     - 4.4.1 [Rozbicie notacji](#441-rozbicie-notacji)
+     - 4.4.2 [Przekład na równanie różnicowe](#442-przekład-na-równanie-różnicowe)
+     - 4.4.3 [Interpretacja fizyczna dla silnika parowego](#443-interpretacja-fizyczna-dla-silnika-parowego)
+     - 4.4.4 [Liczba parametrów do identyfikacji](#444-liczba-parametrów-do-identyfikacji)
+     - 4.4.5 [Przykłady innych struktur ARX](#445-przykłady-innych-struktur-arx)
+5. [Identyfikacja parametrów metodą najmniejszych kwadratów](#5-identyfikacja-parametrów-metodą-najmniejszych-kwadratów)
+   - 5.1 [Sformułowanie problemu](#51-sformułowanie-problemu)
+     - 5.1.1 [Szczegółowe wyjaśnienie wektorów](#511-szczegółowe-wyjaśnienie-wektorów)
+6. [Walidacja i ocena jakości modelu](#6-walidacja-i-ocena-jakości-modelu)
+   - 6.1 [Miary dopasowania modelu](#61-miary-dopasowania-modelu)
+   - 6.2 [Obliczenie sygnału wyjściowego modelu](#62-obliczenie-sygnału-wyjściowego-modelu)
+   - 6.3 [Wyniki walidacji](#63-wyniki-walidacji)
+   - 6.4 [Porównanie modelu z danymi rzeczywistymi](#64-porównanie-modelu-z-danymi-rzeczywistymi)
+   - 6.5 [Analiza reszt](#65-analiza-reszt)
+7. [Analiza stabilności modelu](#7-analiza-stabilności-modelu)
+   - 7.1 [Stabilność systemu dyskretnego](#71-stabilność-systemu-dyskretnego)
+   - 7.2 [Położenie biegunów](#72-położenie-biegunów)
+   - 7.3 [Ocena stabilności](#73-ocena-stabilności)
+   - 7.4 [Transmitancje modelu](#74-transmitancje-modelu)
+8. [Wnioski](#8-wnioski)
+   - 8.1 [Ograniczenia metody](#81-ograniczenia-metody)
+   - 8.2 [Możliwe ulepszenia](#82-możliwe-ulepszenia)
+9. [Literatura](#9-literatura)
+10. [Dodatek A: Implementacja w MATLAB](#dodatek-a-implementacja-w-matlab)
+11. [Dodatek B: Zagadnienia do samodzielnego rozwiązania](#dodatek-b-zagadnienia-do-samodzielnego-rozwiązania)
+
+---
+
 ## 1. Wstęp i cel ćwiczenia
 
 Celem ćwiczenia jest identyfikacja parametryczna modelu silnika parowego przy użyciu struktury ARX (AutoRegressive with eXogenous inputs) i metody najmniejszych kwadratów. Badany układ jest typu MISO (Multiple Input Single Output) z dwoma wejściami i jednym wyjściem.
@@ -156,6 +197,121 @@ Dla naszej implementacji przyjęto następujące parametry struktury:
 Oznacza to, że identyfikujemy model ARX(2,[2,2],[1,1]), który można zapisać w postaci:
 
 $$y(k) + a_1y(k-1) + a_2y(k-2) = b_{10}u_1(k-1) + b_{11}u_1(k-2) + b_{20}u_2(k-1) + b_{21}u_2(k-2) + e(k)$$
+
+### 4.3.1 Szczegółowe uzasadnienie wyboru parametrów ARX(2,[2,2],[1,1])
+
+Wybór konkretnych wartości parametrów struktury modelu ARX dla silnika parowego nie jest przypadkowy, lecz wynika z dogłębnej analizy fizycznych właściwości systemu oraz matematycznych aspektów identyfikacji. Poniżej przedstawiono szczegółowe uzasadnienie dla każdego parametru.
+
+#### A) Rząd części autoregresyjnej: na = 2
+
+**Uzasadnienie fizyczne:**
+
+Silnik parowy jako system termomechaniczny charakteryzuje się dwoma głównymi rodzajami inercji:
+
+1. **Inercja mechaniczna** - wynikająca z masy wirnika generatora, wału napędowego oraz elementów ruchomych tłoka. Ta bezwładność mechaniczna powoduje, że zmiany prędkości obrotowej nie zachodzą natychmiastowo, lecz z pewną stałą czasową.
+
+2. **Inercja termodynamiczna** - związana z pojemnością cieplną cylindra, czasem wymiany ciepła między parą a ściankami cylindra oraz dynamiką przepływu pary przez zawory. Proces termodynamiczny ma swoją charakterystyczną dynamikę, która wpływa na opóźnienia w systemie.
+
+Napięcie generatora jest bezpośrednio proporcjonalne do prędkości obrotowej wału, która z kolei zależy od historii sił działających na układ. Wartość na=2 oznacza, że obecne wyjście systemu zależy od dwóch poprzednich wartości wyjścia, co matematycznie modeluje tę naturalną "pamięć" systemu fizycznego.
+
+**Uzasadnienie matematyczne:**
+
+- Większość systemów fizycznych drugiego rzędu może być skutecznie opisana przez część autoregresyjną drugiego rzędu AR(2)
+- na=1 byłoby zbyt uproszczone - opisywałoby tylko system pierwszego rzędu z jednym biegunem, co nie oddaje złożoności dinamiki silnika parowego
+- na=3 lub wyższe wartości mogłyby prowadzić do **overfittingu**, szczególnie przy ograniczonych danych pomiarowych, oraz zwiększyłyby ryzyko niestabilności numerycznej
+- na=2 stanowi **optymalny kompromis** między złożonością modelu a jego zdolnością do uogólniania
+
+#### B) Rzędy wejść: nb1 = nb2 = 2
+
+**Uzasadnienie fizyczne dla u1 (ciśnienie pary za zaworem):**
+
+Wpływ ciśnienia pary na napięcie generatora nie jest natychmiastowy i przebiega w następujących etapach:
+
+1. **Zmiana ciśnienia** → **przyspieszenie tłoka** → **zmiana momentu obrotowego** → **zmiana prędkości obrotowej** → **zmiana napięcia generatora**
+
+Każdy z tych etapów ma swoją charakterystyczną stałą czasową. Wartość nb1=2 pozwala na modelowanie tej **przejściowej charakterystyki termodynamicznej**, uwzględniając wpływ "historii" ciśnienia na obecne wyjście. Uwzględnia to zarówno bezpośredni wpływ obecnego ciśnienia, jak i efekty inercyjne wynikające z poprzednich stanów.
+
+**Uzasadnienie fizyczne dla u2 (napięcie magnetyzacji generatora):**
+
+Magnetyzacja generatora ma swoją charakterystyczną dynamikę elektromagnetyczną:
+
+1. **Indukcyjność cewek magnetyzujących** - pole magnetyczne nie ustala się natychmiastowo po zmianie napięcia magnetyzacji
+2. **Prądy wirowe** w rdzeniu ferromagnetycznym powodują opóźnienia w ustalaniu się pola magnetycznego
+3. **Histereza magnetyczna** - poprzednie stany magnesowania wpływają na obecną charakterystykę generatora
+
+Wartość nb2=2 modeluje tę **elektromagnetyczną inercję generatora**, uwzględniając wpływ poprzednich stanów magnesowania na obecne napięcie wyjściowe.
+
+**Uzasadnienie matematyczne:**
+
+- nb=1 modelowałoby tylko **natychmiastowy wpływ** wejścia, co byłoby zbyt uproszczone dla systemów z dynamiką drugiego rzędu
+- nb=2 umożliwia modelowanie **dynamiki drugiego rzędu** dla każdego kanału wejściowego, co jest adekwatne dla większości systemów fizycznych
+- nb=3 lub więcej **zwiększyłoby liczbę parametrów** bez znaczącego poprawienia dokładności, zwiększając jednocześnie ryzyko overfittingu
+
+#### C) Opóźnienia transportowe: nk1 = nk2 = 1
+
+**Uzasadnienie fizyczne:**
+
+W każdym systemie fizycznym istnieje **minimalny czas propagacji sygnału** między przyczyną a skutkiem:
+
+1. **Opóźnienie termodynamiczne** (dla u1): czas potrzebny na to, aby zmiana ciśnienia pary przełożyła się na obserwowalną zmianę napięcia generatora. Obejmuje to czas reakcji mechanizmu tłokowego oraz czas potrzebny na zmianę prędkości obrotowej.
+
+2. **Opóźnienie elektromagnetyczne** (dla u2): czas potrzebny na to, aby zmiana napięcia magnetyzacji przełożyła się na zmianę pola magnetycznego i w konsekwencji na zmianę napięcia wyjściowego generatora.
+
+W badanym systemie z okresem próbkowania Tp = 50ms, opóźnienia nk1 = nk2 = 1 odpowiadają **realistycznemu czasowi reakcji** systemu równemu jednemu okresowi próbkowania.
+
+**Uzasadnienie praktyczne:**
+
+- nk=0 oznaczałoby **natychmiastową reakcję** systemu, co jest niefizyczne dla systemów rzeczywistych
+- nk=1 odpowiada **okresowi próbkowania** (50ms), co jest rozsądnym przypuszczeniem dla opóźnienia w systemie termomechanicznym
+- nk=2 lub więcej **wydłużyłoby opóźnienie** ponad to, co jest fizycznie uzasadnione dla tego typu systemu
+
+#### D) Obliczenie maksymalnego opóźnienia
+
+Maksymalne opóźnienie w systemie jest określone wzorem:
+
+$$max\_delay = max([na, nb_1+nk_1-1, nb_2+nk_2-1])$$
+
+Dla naszych parametrów:
+
+- Część autoregresyjna: na = 2
+- Pierwsze wejście: nb1+nk1-1 = 2+1-1 = 2
+- Drugie wejście: nb2+nk2-1 = 2+1-1 = 2
+
+Zatem: max_delay = max([2, 2, 2]) = 2
+
+To oznacza, że **identyfikacja może rozpocząć się od próbki k = 3**, ponieważ:
+
+- Do obliczenia y(3) potrzebujemy: y(1), y(2), u1(1), u1(2), u2(1), u2(2)
+- start_idx = max_delay + 1 = 3
+
+#### E) Analiza kompromisów
+
+**Zalety wybranej struktury ARX(2,[2,2],[1,1]):**
+
+✅ **6 parametrów** do identyfikacji (na+nb1+nb2 = 2+2+2) - liczba zarządzalna numerycznie  
+✅ **Wystarczająco złożona** do modelowania dynamiki drugiego rzędu  
+✅ **Fizycznie uzasadniona** dla systemów termomechanicznych  
+✅ **Sprawdzona w praktyce** dla podobnych aplikacji przemysłowych  
+✅ **Dobra stabilność numeryczna** przy estymacji metodą najmniejszych kwadratów  
+✅ **Unika overfittingu** przy typowych ilościach danych pomiarowych
+
+**Porównanie z alternatywnymi strukturami:**
+
+| Struktura          | Parametry | Zalety                       | Wady                         |
+| ------------------ | --------- | ---------------------------- | ---------------------------- |
+| ARX(1,[1,1],[1,1]) | 3         | Prostota, szybkość           | Za proste, gorsza dokładność |
+| ARX(3,[2,2],[1,1]) | 7         | Więcej "pamięci"             | Ryzyko overfittingu          |
+| ARX(2,[3,3],[1,1]) | 8         | Dłuższa odpowiedź na wejścia | Za dużo parametrów           |
+| ARX(2,[2,2],[2,2]) | 6         | Ta sama liczba parametrów    | Za duże opóźnienia           |
+
+**Podsumowanie:**
+
+Wybór struktury ARX(2,[2,2],[1,1]) dla identyfikacji silnika parowego stanowi **optymalny kompromis** między:
+
+- Złożonością modelu a liczbą parametrów
+- Dokładnością odwzorowania dynamiki a stabilnością numeryczną
+- Uzasadnieniem fizycznym a praktycznością implementacji
+- Zdolnością do modelowania a ryzykiem overfittingu
 
 Zastosowanie tego konkretnego modelu ARX wynika z analizy dynamiki badanego układu i jest kompromisem między złożonością modelu a jego zdolnością do odwzorowania zachowania systemu.
 
